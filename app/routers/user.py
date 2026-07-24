@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
-from ..import models, schemas, utils, oauth2
+from fastapi import status, HTTPException, Depends, APIRouter
+from ..import models, schemas, utils
 from sqlalchemy.orm import Session
-from ..database import engine, get_db
+from ..database import get_db
 from app.logger import get_logger
-from app.metrics import users_created_total, database_errors_total ,duplicate_email_total
+from app.metrics import users_created_total, duplicate_email_total
 
 from sqlalchemy.exc import IntegrityError
 

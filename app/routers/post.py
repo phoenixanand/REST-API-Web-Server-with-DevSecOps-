@@ -1,9 +1,9 @@
 from typing import List
-from fastapi import FastAPI, Response, status, HTTPException, Depends, APIRouter
-from ..import models, schemas, utils, oauth2
+from fastapi import Response, status, HTTPException, Depends, APIRouter
+from ..import models, schemas, oauth2
 from sqlalchemy.orm import Session
 from app.logger import get_logger
-from ..database import engine, get_db
+from ..database import get_db
 from typing import Optional
 from app.metrics import posts_created_total, posts_updated_total, posts_deleted_total, database_errors_total
 
