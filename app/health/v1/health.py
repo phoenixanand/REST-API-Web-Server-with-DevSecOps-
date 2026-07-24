@@ -11,7 +11,6 @@ logger = get_logger(__name__)
 
 @router.get("/healthcheck", tags=["Health"])
 def healthcheck(db: Session = Depends(get_db)):
-    """Returns API status and DB connectivity status."""
     try:
         db.execute(text("SELECT 1"))
         db_status = "ok"
