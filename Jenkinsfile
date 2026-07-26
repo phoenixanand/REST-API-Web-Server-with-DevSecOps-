@@ -38,12 +38,6 @@ pipeline {
                 pytest -v -s test/test_user.py --cov=app '''
             }
         }
-        // stage('Coverage') {
-        //     steps {
-        //         sh '''. venv/bin/activate
-        //         pytest --cov=app'''
-        //     }
-        // }
         stage('SonarQube') {
             agent {
                     docker {
@@ -103,7 +97,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'checkov -d .'
+                sh 'checkov -d . --skip-path venv --skip-path .git'
             } 
         }
         
