@@ -6,9 +6,6 @@ pipeline {
 
         }
     }
-    environment {
-
-    }
     stages {
         stage('Clean') {
             steps {
