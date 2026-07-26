@@ -30,8 +30,8 @@ pipeline {
         }
         stage('Pytest') {
             steps {
-                sh '. venv/bin/activate
-                pytest -v -s test/test_user.py --cov=app '
+                sh '''. venv/bin/activate
+                pytest -v -s test/test_user.py --cov=app '''
             }
         }
         // stage('Coverage') {
@@ -69,7 +69,7 @@ pipeline {
                 }
             }
             steps {
-                sh 'gitleaks detect . '
+                sh '''gitleaks detect . '''
             }
         }
         stage('Filesystem Scan') {
