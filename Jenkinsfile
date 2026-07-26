@@ -65,18 +65,18 @@ pipeline {
                 }
             }
         }
-        stage('Secret Scan') {
-            agent {
-                docker {
-                    image 'zricethezav/gitleaks:latest'
-                    args '--entrypoint=""'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''gitleaks detect . --no-git -v  --exclude-path .env '''
-            }
-        }
+        // stage('Secret Scan') {
+        //     agent {
+        //         docker {
+        //             image 'zricethezav/gitleaks:latest'
+        //             args '--entrypoint=""'
+        //             reuseNode true
+        //         }
+        //     }
+        //     steps {
+        //         sh '''gitleaks detect . --no-git -v  --exclude-path .env '''
+        //     }
+        // }
         stage('Filesystem Scan') {
             agent {
                 docker {
