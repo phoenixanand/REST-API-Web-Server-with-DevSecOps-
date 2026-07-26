@@ -86,13 +86,14 @@ pipeline {
                 }
             }
             steps {
-                sh 'trivy fs .'
+                sh 'trivy fs . --cache-dir .trivycache'
             }
         }
         stage('Hadolint') {
             agent {
                 docker {
                     image 'hadolint/hadolint:latest'
+                    args '--entrypoint=""'
                     reuseNode true
                 }
             }
@@ -104,6 +105,7 @@ pipeline {
             agent {
                 docker {
                     image 'bridgecrew/checkov:latest'
+                    args '--entrypoint=""'
                     reuseNode true
                 }
             }
@@ -134,6 +136,7 @@ pipeline {
             agent {
                 docker {
                     image 'aquasec/trivy:latest'
+                    args '--entrypoint=""'
                     reuseNode true
                 }
             }
