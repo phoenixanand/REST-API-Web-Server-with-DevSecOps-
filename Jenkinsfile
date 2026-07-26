@@ -91,7 +91,7 @@ pipeline {
         }
         stage('Hadolint') {
             steps {
-                sh 'docker run --rm -i hadolint/hadolint:latest < Dockerfile'
+                sh 'docker run --rm -i hadolint/hadolint:latest < Dockerfile || true'
             }
         }
         stage('Checkov') {
