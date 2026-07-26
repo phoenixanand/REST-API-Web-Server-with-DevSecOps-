@@ -1,0 +1,6 @@
+echo "venv" >> .dockerignore
+echo ".trivycache" >> .dockerignore
+echo ".git" >> .dockerignore
+echo ".pytest_cache" >> .dockerignore
+echo "__pycache__" >> .dockerignore
+

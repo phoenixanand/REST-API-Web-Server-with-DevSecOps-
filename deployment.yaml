@@ -14,8 +14,42 @@ spec:
       labels:
         app: fastapi-app
     spec:
+      automountServiceAccountToken: false
       containers:
       - name: fastapi-app
-        image: alphaman02/cicd:19
+        image: alphaman02/fastapi:replaceImageTag
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 10000
+          readOnlyRootFilesystem: true
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
