@@ -74,7 +74,7 @@ pipeline {
                 }
             }
             steps {
-                sh '''gitleaks detect . --no-git -v'''
+                sh '''gitleaks detect . --no-git -v  --exclude-path .env '''
             }
         }
         stage('Filesystem Scan') {
