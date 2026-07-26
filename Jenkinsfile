@@ -1,8 +1,8 @@
 pipeline {
     agent {
         docker {
-            image 'alphaman02/mainpython:1.0'
-            args '-v /var/run/docker.sock:/var/run/docker.sock  --network devops-net'
+            image 'alphaman02/new-python:1.0'
+            args '-v /var/run/docker.sock:/var/run/docker.sock  --network devops-net --group-add 110'
 
         }
     }
