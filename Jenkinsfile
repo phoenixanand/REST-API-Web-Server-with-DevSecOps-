@@ -130,7 +130,7 @@ pipeline {
                 }
             }
             steps {
-                sh ' trivy image alphaman02/fastapi:${BUILD_NUMBER} '
+                sh ' trivy image alphaman02/fastapi:${BUILD_NUMBER} --cache-dir .trivycache'
             }
         }
         // stage('Update Manifest') {
