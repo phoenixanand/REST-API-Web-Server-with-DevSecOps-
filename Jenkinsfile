@@ -90,15 +90,8 @@ pipeline {
             }
         }
         stage('Hadolint') {
-            agent {
-                docker {
-                    image 'hadolint/hadolint:latest'
-                    args '--entrypoint=""'
-                    reuseNode true
-                }
-            }
             steps {
-                sh 'hadolint Dockerfile'
+                sh 'docker run --rm -i hadolint/hadolint:latest < Dockerfile'
             }
         }
         stage('Checkov') {
