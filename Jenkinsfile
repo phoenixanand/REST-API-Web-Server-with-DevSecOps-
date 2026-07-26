@@ -139,43 +139,43 @@ pipeline {
         } 
     }
 
-    post {
+    // post {
 
-        success {
-            emailext(
-                subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """ Build completed successfully Job Name: ${env.JOB_NAME}
-                Build Number: ${env.BUILD_NUMBER} Build URL: ${env.BUILD_URL}
-                Status: SUCCESS""",
-                to: "team@example.com"
-            )
-        }   
+    //     success {
+    //         emailext(
+    //             subject: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+    //             body: """ Build completed successfully Job Name: ${env.JOB_NAME}
+    //             Build Number: ${env.BUILD_NUMBER} Build URL: ${env.BUILD_URL}
+    //             Status: SUCCESS""",
+    //             to: "phoenixanand02@example.com"
+    //         )
+    //     }   
     
-        failure {
-            emailext(
-                subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """Build failed
-                Job Name: ${env.JOB_NAME}
-                Build Number: ${env.BUILD_NUMBER}
-                Build URL: ${env.BUILD_URL}
-            Please check Jenkins logs""",
-                to: "team@example.com"
-            )
-        }
-        unstable {
-            emailext(
-                subject: "UNSTABLE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
-                body: """Build is unstable
-                Job Name: ${env.JOB_NAME}
-                Build Number: ${env.BUILD_NUMBER}
-                Build URL: ${env.BUILD_URL}""",
-                to: "team@example.com"
-            )
-        }
-        always {
-            echo "Pipeline completed"
-        }
-    }
+    //     failure {
+    //         emailext(
+    //             subject: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+    //             body: """Build failed
+    //             Job Name: ${env.JOB_NAME}
+    //             Build Number: ${env.BUILD_NUMBER}
+    //             Build URL: ${env.BUILD_URL}
+    //         Please check Jenkins logs""",
+    //             to: "phoenixanand02@example.com"
+    //         )
+    //     }
+    //     unstable {
+    //         emailext(
+    //             subject: "UNSTABLE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'",
+    //             body: """Build is unstable
+    //             Job Name: ${env.JOB_NAME}
+    //             Build Number: ${env.BUILD_NUMBER}
+    //             Build URL: ${env.BUILD_URL}""",
+    //             to: "phoenixanand02@example.com"
+    //         )
+    //     }
+    //     always {
+    //         echo "Pipeline completed"
+    //     }
+    // }
 }
 
 
