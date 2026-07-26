@@ -32,6 +32,19 @@ pipeline {
                 }
             }
         }
+        stage('Start Test DB') {
+            steps {
+                sh '''
+                docker run -d --name test-postgres \
+                --network devops-net \
+                -e POSTGRES_PASSWORD=testpass \
+                -e POSTGRES_DB=testdb \
+                -p 5432:5432 \
+                postgres:16
+                sleep 5
+                '''
+                }
+        }
         stage('Pytest') {
             steps {
                 sh '''. venv/bin/activate
