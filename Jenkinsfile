@@ -133,11 +133,28 @@ pipeline {
                 sh ' trivy image alphaman02/fastapi:${BUILD_NUMBER} --cache-dir .trivycache'
             }
         }
-        // stage('Update Manifest') {
-        //     steps {
-        //         sh ' sed -i "s/latest/${BUILD_NUMBER}/g" kubernetes/deployment.yaml'
-        //     }
-        // } 
+        stage('Update Deployment File') {
+            steps {
+                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {   
+                    sh '''
+                    rm -rf gitops-repo
+                    git clone https://x-access-token:${GITHUB_TOKEN}@github.com/phoenixanand/cicd-jenkins-argocd-project gitops
+                    cd gitops
+
+                    git config user.email "phoenixanand02@gmail.com"           
+                    git config user.name "Anand"
+
+                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" deployment.yml
+                    
+                    git add deployment.yml
+                    git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
+
+                    git push https://x-access-token:${GITHUB_TOKEN}@github.com/phoenixanand/REST-API-Web-Server-with-DevSecOps- HEAD:main
+                    '''
+                }
+            }
+        }
+
     }
 
     // post {
