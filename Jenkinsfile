@@ -104,7 +104,7 @@ pipeline {
         stage('Docker Build and Push') {
             agent {
                 docker {
-                    image 'docker:24-cli'
+                    image 'docker:27-cli'
                     args '-v /var/run/docker.sock:/var/run/docker.sock --group-add 110'
                     reuseNode true
                 }
