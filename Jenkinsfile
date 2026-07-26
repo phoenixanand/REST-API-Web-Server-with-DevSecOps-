@@ -144,7 +144,7 @@ pipeline {
                     git config user.email "phoenixanand02@gmail.com"           
                     git config user.name "Anand"
 
-                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" deployment.yml
+                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" deployment.yaml
                     
                     git add deployment.yml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
