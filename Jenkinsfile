@@ -25,6 +25,13 @@ pipeline {
                 pip install -r requirements.txt'''
             }
         }
+        stage('Setup Env') {
+            steps {
+                withCredentials([file(credentialsId: 'app-env-file', variable: 'ENV_FILE')]) {
+                    sh 'cp $ENV_FILE .env'
+                }
+            }
+        }
         stage('Pytest') {
             steps {
                 sh '''. venv/bin/activate
