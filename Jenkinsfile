@@ -33,6 +33,13 @@ pipeline {
             }
         }
         stage('Start Test DB') {
+            agent {
+                docker {
+                    image 'docker:24-cli'
+                    args '-v /var/run/docker.sock:/var/run/docker.sock'
+                    reuseNode true
+                }
+            }
             steps {
                 sh '''
                 docker run -d --name test-postgres \
