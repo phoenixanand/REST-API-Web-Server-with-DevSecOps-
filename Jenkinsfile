@@ -138,7 +138,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {   
                     sh '''
                     rm -rf gitops-repo
-                    git clone https://x-access-token:${GITHUB_TOKEN}@github.com/phoenixanand/cicd-jenkins-argocd-project gitops
+                    git clone https://x-access-token:${GITHUB_TOKEN}@github.com/phoenixanand/REST-API-Web-Server-with-DevSecOps- gitops
                     cd gitops
 
                     git config user.email "phoenixanand02@gmail.com"           
