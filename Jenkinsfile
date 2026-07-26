@@ -111,7 +111,9 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''docker build -t $DOCKER_USER/fastapi:${BUILD_NUMBER} -t $DOCKER_USER/fastapi:latest .
+                    sh ''' 
+                    export HOME=/tmp
+                    docker build -t $DOCKER_USER/fastapi:${BUILD_NUMBER} -t $DOCKER_USER/fastapi:latest .
                     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                     docker push $DOCKER_USER/fastapi:${BUILD_NUMBER}
                     docker push $DOCKER_USER/fastapi:latest'''
