@@ -22,16 +22,16 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                sh '''python3 -m venv venv
+                sh 'python3 -m venv venv
                 . venv/bin/activate
                 pip install --upgrade pip
-                pip install -r requirements.txt'''
+                pip install -r requirements.txt'
             }
         }
         stage('Pytest') {
             steps {
-                sh '''. venv/bin/activate
-                pytest -v -s test/test_user.py --cov=app '''
+                sh '. venv/bin/activate
+                pytest -v -s test/test_user.py --cov=app '
             }
         }
         // stage('Coverage') {
@@ -44,13 +44,13 @@ pipeline {
             agent {
                     docker {
                         image 'sonarsource/sonar-scanner-cli:latest'
-                        reuseNode true
-                        
+                        args '--network devops-net'
+                        reuseNode true          
                     }
             }
             steps {
-                withSonarQubeEnv([string(credentialsId: 'sonar-token', variable: 'SONAR_AUTH_TOKEN')]) {
-                    sh """sonar-scanner"""
+                withSonarQubeEnv('SonarQube') {
+                    sh "sonar-scanner"
                 }
             }
         }
@@ -69,7 +69,7 @@ pipeline {
                 }
             }
             steps {
-                sh '''gitleaks detect . '''
+                sh 'gitleaks detect . '
             }
         }
         stage('Filesystem Scan') {
@@ -80,7 +80,7 @@ pipeline {
                 }
             }
             steps {
-                sh '''trivy fs .'''
+                sh 'trivy fs .'
             }
         }
         stage('Hadolint') {
@@ -91,13 +91,18 @@ pipeline {
                 }
             }
             steps {
-                sh '''hadolint Dockerfile'''
+                sh 'hadolint Dockerfile'
             }
         }
         stage('Checkov') {
+            agent {
+                docker {
+                    image 'bridgecrew/checkov:latest'
+                    reuseNode true
+                }
+            }
             steps {
-                sh '''pip install checkov
-                checkov -d .'''
+                sh 'checkov -d .'
             } 
         }
         
@@ -111,11 +116,11 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh '''docker build -t $DOCKER_USER/fastapi:${BUILD_NUMBER} -t $DOCKER_USER/fastapi:latest .
+                    sh 'docker build -t $DOCKER_USER/fastapi:${BUILD_NUMBER} -t $DOCKER_USER/fastapi:latest .
                     echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
                     docker push $DOCKER_USER/fastapi:${BUILD_NUMBER}
                     docker push $DOCKER_USER/fastapi:latest
-                    '''
+                    '
                 }
             }
         }
@@ -128,12 +133,12 @@ pipeline {
                 }
             }
             steps {
-                sh ''' trivy image alphaman02/fastapi:${BUILD_NUMBER} '''
+                sh ' trivy image alphaman02/fastapi:${BUILD_NUMBER} '
             }
         }
         stage('Update Manifest') {
             steps {
-                sh ''' sed -i "s/latest/${BUILD_NUMBER}/g" kubernetes/deployment.yaml'''
+                sh ' sed -i "s/latest/${BUILD_NUMBER}/g" kubernetes/deployment.yaml'
             }
         } 
     }
