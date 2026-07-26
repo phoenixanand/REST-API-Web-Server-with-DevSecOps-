@@ -69,11 +69,12 @@ pipeline {
             agent {
                 docker {
                     image 'zricethezav/gitleaks:latest'
+                    args '--entrypoint=""'
                     reuseNode true
                 }
             }
             steps {
-                sh '''gitleaks detect . '''
+                sh '''gitleaks detect . --no-git -v'''
             }
         }
         stage('Filesystem Scan') {
