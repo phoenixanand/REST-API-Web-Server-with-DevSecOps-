@@ -1,9 +1,9 @@
-FROM python:3.14-slim AS base
+FROM python:3.12-slim AS base
 WORKDIR /src/app
 COPY requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip && pip install --prefix=/install --no-cache-dir -r requirements.txt
 
-FROM python:3.14-slim 
+FROM python:3.12-slim 
 RUN groupadd -r app && useradd -r -g app app
 WORKDIR /app
 COPY --from=base /install /usr/local
