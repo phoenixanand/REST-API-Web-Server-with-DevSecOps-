@@ -1,6 +1,11 @@
-echo "venv" >> .dockerignore
-echo ".trivycache" >> .dockerignore
-echo ".git" >> .dockerignore
-echo ".pytest_cache" >> .dockerignore
-echo "__pycache__" >> .dockerignore
-
+cat > .dockerignore << 'EOF'
+venv
+.trivycache
+.git
+gitops
+__pycache__
+.pytest_cache
+*.pyc
+.env
+node_modules
+EOF
