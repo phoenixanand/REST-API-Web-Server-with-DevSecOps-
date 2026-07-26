@@ -132,11 +132,11 @@ pipeline {
                 sh ' trivy image alphaman02/fastapi:${BUILD_NUMBER} '
             }
         }
-        stage('Update Manifest') {
-            steps {
-                sh ' sed -i "s/latest/${BUILD_NUMBER}/g" kubernetes/deployment.yaml'
-            }
-        } 
+        // stage('Update Manifest') {
+        //     steps {
+        //         sh ' sed -i "s/latest/${BUILD_NUMBER}/g" kubernetes/deployment.yaml'
+        //     }
+        // } 
     }
 
     // post {
