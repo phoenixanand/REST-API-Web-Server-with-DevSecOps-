@@ -32,26 +32,6 @@ pipeline {
                 }
             }
         }
-        stage('Start Test DB') {
-            agent {
-                docker {
-                    image 'docker:24-cli'
-                    args '-v /var/run/docker.sock:/var/run/docker.sock'
-                    reuseNode true
-                }
-            }
-            steps {
-                sh '''
-                docker run -d --name test-postgres \
-                --network devops-net \
-                -e POSTGRES_PASSWORD=testpass \
-                -e POSTGRES_DB=testdb \
-                -p 5432:5432 \
-                postgres:16
-                sleep 5
-                '''
-                }
-        }
         stage('Pytest') {
             steps {
                 sh '''. venv/bin/activate
