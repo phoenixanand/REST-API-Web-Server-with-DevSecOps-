@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: fast-api
+  labels:
+    app: postgresql
+spec:
+  serviceName: postgresql # Headless service name
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresql
+  template:
+    metadata:
+      labels:
+        app: postgresql
+    spec:
+      containers:
+        -name: postgresql
+        image: postgres:17
+        ports:
+          -containerPort: 5432
+        env:
+          - name: POSTGRES_PASSWORD  # take it from secret.yaml
+            valueFrom:
+              secretKeyRef:
+                name: postgresql
+                key: postgres
+          - name: POSTGRES_USER  
+            value: postgres
+        volumeMounts:
+          -name: 
+          mouthPath:
+  volumeClaimTemplates:
+  - metadata:
+  spec:
+    accessModes: ["ReadWriteOnce"]
+    resources:
+      requests:
+        storage: 100Mi
+
