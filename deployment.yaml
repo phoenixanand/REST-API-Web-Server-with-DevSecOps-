@@ -17,7 +17,7 @@ spec:
       automountServiceAccountToken: false
       containers:
       - name: fastapi-app
-        image: alphaman02/fastapi:replaceImageTag
+        image: alphaman02/fastapi:54
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
