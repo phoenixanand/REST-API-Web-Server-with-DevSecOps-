@@ -6,6 +6,10 @@ from app.logger import get_logger
 from ..database import get_db
 from typing import Optional
 from app.metrics import posts_created_total, posts_updated_total, posts_deleted_total, database_errors_total
+from app.valkey import valkey
+import json
+from app.kafka.producer import producer
+
 
 router = APIRouter( prefix="/posts", tags=['post'])
 
@@ -14,8 +18,19 @@ logger = get_logger(__name__)
 @router.get("/", response_model=List[schemas.PostResponse])    
 def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user), limit: int = 10, search: Optional[str] = ""):
 
+    cache_key = f"posts:{search}:{limit}"
+    cached_posts = valkey.get(cache_key)
+    if cached_posts:
+        return json.loads(cached_posts)
+
     posts = db.query(models.Post).filter(models.Post.first_name.contains(search)).limit(limit).all()
-    return posts
+    result = [
+        schemas.PostResponse.model_validate(post).model_dump(mode="json")
+        for post in posts
+    ]
+
+    valkey.setex(cache_key, 300, json.dumps(result))
+    return result
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
 def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
@@ -26,24 +41,52 @@ def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db), curren
     try:
         db.commit()
     except Exception:
+        db.rollback()
         database_errors_total.inc()
+        logger.error("Failed to create post for user %s", current_user.id)
+        raise HTTPException(status_code=500, detail="Could not create post")
+       
     db.refresh(new_post)
     posts_created_total.inc()
     logger.info("User %s created post %s",current_user.id, new_post.id)
+    producer.send(
+        "post-events",
+        {
+            "event": "post_created",
+            "post_id": post.id,
+            "title": post.title
+        }
+    )
+
+
+
+
     return new_post
 
 
-@router.get("/{id}", response_model=List[schemas.PostResponse])
+@router.get("/{id}", response_model=schemas.PostResponse)
 def get_post(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
-   
-    test_post = db.query(models.Post).filter(models.Post.id == id).all()
+
+
+    cache_key = f"post:{current_user.id}:{id}"
+    cached_post = valkey.get(cache_key)
+    if cached_post:
+        logger.info("User %s fetched post %s (cache hit)", current_user.id, id)
+        return json.loads(cached_post)
+
+    test_post = db.query(models.Post).filter(models.Post.id == id).first()
     
     if not test_post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"post with id {id} not found")
+
+    if test_post.owner_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="not authorized to access this post")
     
+    result = schemas.PostResponse.model_validate(test_post).model_dump(mode="json")
+    valkey.setex(cache_key, 300, json.dumps(result))
     logger.info("User %s fetched post %s",current_user.id, id)
 
-    return test_post
+    return result
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
@@ -62,13 +105,16 @@ def delete_post(id: int, db: Session = Depends(get_db), current_user: int = Depe
     try:
         db.commit()
     except Exception:
+        db.rollback()
+        logger.error("Failed to delete post %s for user %s", id, current_user.id)
         database_errors_total.inc()
+        raise HTTPException(status_code=500, detail="Could not delete post")
+
+    valkey.delete(f"post:{current_user.id}:{id}")
     
     logger.info("User %s deleted post %s",current_user.id,id)
     posts_deleted_total.inc()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-
 
 @router.put("/{id}", response_model=schemas.PostResponse)
 def update_post(id: int, post: schemas.PostUpdate, db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user)):
@@ -80,7 +126,15 @@ def update_post(id: int, post: schemas.PostUpdate, db: Session = Depends(get_db)
      if updaa.owner_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="not authorized to perform requested action")
      updated_posts.update(post.dict(), synchronize_session=False)
-     db.commit()
-     posts_updated_total.inc()
 
+     try:
+        db.commit()
+     except Exception:
+        db.rollback()
+        database_errors_total.inc()
+        logger.error("Failed to update post %s for user %s", id, current_user.id)
+        raise HTTPException(status_code=500, detail="Could not update post")
+     posts_updated_total.inc()
+     valkey.delete(f"post:{current_user.id}:{id}")
+     logger.info("User %s updated post %s", current_user.id, id)
      return updated_posts.first()

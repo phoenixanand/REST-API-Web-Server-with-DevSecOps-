@@ -71,3 +71,5 @@ uvicorn==0.51.0
 watchfiles==1.2.0
 websockets==16.1
 checkov
+redis==8.1.0
+kafka-python==3.0.9

@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from ..database import get_db
 from app.logger import get_logger
 from app.metrics import users_created_total, duplicate_email_total
+from app.kafka.producer import producer
 
 from sqlalchemy.exc import IntegrityError
 
@@ -30,6 +31,13 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         
     db.refresh(new_user)
     users_created_total.inc()
+
+    producer.send("user-events",
+    {
+        "event": "user_registered",
+        "user_id": user.id,
+        "email": user.email
+    })
 
     return new_user
 
