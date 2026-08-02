@@ -22,6 +22,11 @@ spec:
         imagePullPolicy: Always # always pull the image latest and freshly 
         ports:
         - containerPort: 8000
+        envFrom:
+        - configMapRef:
+            name: fastapi-config
+        - secretRef:
+            name: fastapi-secret
         resources:
           requests:
             cpu: "250m"
@@ -54,3 +59,5 @@ spec:
       securityContext:
         seccompProfile:
           type: RuntimeDefault
+
+    
