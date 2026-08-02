@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
     valkey_host: str
     valkey_port: str
+    kafka_bootstrap_servers: str = "localhost:9092"
 
     model_config = SettingsConfigDict(env_file=".env")
 
