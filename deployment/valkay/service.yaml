@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: valkey
+  namespace: fastapi
 spec:
   selector:
     app: valkey
