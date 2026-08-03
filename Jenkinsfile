@@ -146,7 +146,7 @@ pipeline {
 
                     sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" deployment.yaml
                     
-                    git add deployment.yaml
+                    git add deployment/deployment.yaml
                     git commit -m "Update deployment image to version ${BUILD_NUMBER}" || echo "No changes to commit"
 
                     git push https://x-access-token:${GITHUB_TOKEN}@github.com/phoenixanand/REST-API-Web-Server-with-DevSecOps- HEAD:main
