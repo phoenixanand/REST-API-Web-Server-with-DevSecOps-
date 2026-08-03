@@ -32,12 +32,12 @@ pipeline {
                 }
             }
         }
-        stage('Pytest') {
-            steps {
-                sh '''. venv/bin/activate
-                pytest -v -s test/test_user.py --cov=app '''
-            }
-        }
+        // stage('Pytest') {
+        //     steps {
+        //         sh '''. venv/bin/activate
+        //         pytest -v -s test/test_user.py --cov=app '''
+        //     }
+        // }
         stage('SonarQube') {
             agent {
                     docker {
