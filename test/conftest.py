@@ -9,6 +9,7 @@ from app.config import settings
 from app.database import get_db
 from app.database import Base
 from alembic import command
+from unittest.mock import MagicMock
 
 
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:testpass@test-postgres:5432/testdb"
@@ -50,3 +51,18 @@ def test_user(client):
     new_user['password'] = user_data['password']
     assert res.status_code == 201
     return new_user 
+
+@pytest.fixture(autouse=True)
+def mock_kafka_and_valkey(monkeypatch):
+    # Mock Kafka producer
+    mock_producer_send = MagicMock()
+    monkeypatch.setattr("app.kafka.producer.producer.send", mock_producer_send)
+
+    # Mock Valkey client methods
+    monkeypatch.setattr("app.valkey.valkey.get", MagicMock(return_value=None))
+    monkeypatch.setattr("app.valkey.valkey.setex", MagicMock(return_value=True))
+    monkeypatch.setattr("app.valkey.valkey.delete", MagicMock(return_value=True))
+    monkeypatch.setattr("app.valkey.valkey.incr", MagicMock(return_value=1))
+    monkeypatch.setattr("app.valkey.valkey.expire", MagicMock(return_value=True))
+
+    yield mock_producer_send

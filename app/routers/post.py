@@ -53,14 +53,10 @@ def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db), curren
         "post-events",
         {
             "event": "post_created",
-            "post_id": post.id,
-            "title": post.title
+            "post_id": new_post.id,
+            "first_name": new_post.first_name
         }
     )
-
-
-
-
     return new_post
 
 
