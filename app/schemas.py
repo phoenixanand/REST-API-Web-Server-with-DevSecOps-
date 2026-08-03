@@ -37,7 +37,7 @@ class PostResponse(BaseModel):
     last_name : str
     age : int
     published: bool
-    phone_number :Optional[int] = None
+    phone_number :Optional[str] = None
 
     class Config:
         orm_mode = True

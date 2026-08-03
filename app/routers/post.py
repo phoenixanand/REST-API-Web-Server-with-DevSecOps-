@@ -18,7 +18,8 @@ logger = get_logger(__name__)
 @router.get("/", response_model=List[schemas.PostResponse])    
 def get_posts(db: Session = Depends(get_db), current_user: int = Depends(oauth2.get_current_user), limit: int = 10, search: Optional[str] = ""):
 
-    cache_key = f"posts:{search}:{limit}"
+    version = valkey.get("posts:cache_version") or "1"
+    cache_key = f"posts:{version}:{search}:{limit}"
     cached_posts = valkey.get(cache_key)
     if cached_posts:
         return json.loads(cached_posts)
@@ -48,6 +49,7 @@ def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db), curren
        
     db.refresh(new_post)
     posts_created_total.inc()
+    valkey.incr("posts:cache_version")
     logger.info("User %s created post %s",current_user.id, new_post.id)
     producer.send(
         "post-events",
