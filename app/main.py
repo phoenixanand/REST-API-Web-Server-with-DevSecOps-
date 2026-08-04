@@ -11,7 +11,7 @@ from prometheus_fastapi_instrumentator import Instrumentator
 import time
 
 
-# models.Base.metadata.create_all(bind=engine)
+models.Base.metadata.create_all(bind=engine)
 
 logger = get_logger(__name__)
 
