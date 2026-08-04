@@ -12,7 +12,7 @@ from alembic import command
 from unittest.mock import MagicMock
 
 
-SQLALCHEMY_DATABASE_URL = "postgresql://postgres:testpass@test-postgres:5432/testdb"
+SQLALCHEMY_DATABASE_URL = "postgresql://postgres:password@postgres:5432/testdb"
 
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
