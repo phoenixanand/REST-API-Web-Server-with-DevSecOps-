@@ -35,8 +35,8 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     producer.send("user-events",
     {
         "event": "user_registered",
-        "user_id": user.id,
-        "email": user.email
+        "user_id": new_user.id,
+        "email": new_user.email
     })
 
     return new_user
